@@ -6,7 +6,7 @@ O aplicativo foi implementado buscando ao máximo utilizar apenas recursos nativ
 - **Shared_preferences**: para persistência de dados;
 - **Flutter_localizations**: para internacionalização de data.
 
-#### Instalação: [Baixe o APK](https://github.com/AlexFlorenco/to-do-list-ldc/releases/download/APK/To-Do-List.apk)
+#### Instalação: [Baixe o APK](https://github.com/AlexFlorenco/to-do-list-ldc/releases)
 
 <br>
 
@@ -22,7 +22,7 @@ ___________________
 ### Instalação no seu dispositivo
 Para executar este aplicativo no seu dispositivo é necessário que você possua um smartphone com Android.
 Com um smartphone Android em mãos, você pode executar o app seguindo estas etapas:
-1. Acesse o link do download clicando [aqui](https://github.com/AlexFlorenco/to-do-list-ldc/releases/download/APK/To-Do-List.apk). 
+1. Acesse o link do download clicando [aqui](https://github.com/AlexFlorenco/to-do-list-ldc/releases)
 2. Você irá baixar o arquivo `To-Do-List.apk`
 3. Abra o arquivo e permita quais quer avisos de segurança do Android
 4. Clique em Instalar
