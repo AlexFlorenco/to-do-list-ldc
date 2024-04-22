@@ -10,9 +10,9 @@ O aplicativo foi implementado buscando ao máximo utilizar apenas recursos nativ
 
 <br>
 
-<img width="357" alt="ToDoList1" src="https://github.com/AlexFlorenco/to-do-list-ldc/assets/92060682/e83c27e0-491c-4997-b212-6a4ef12104a9">
+<img width="250" alt="ToDoList1" src="https://github.com/AlexFlorenco/to-do-list-ldc/assets/92060682/e83c27e0-491c-4997-b212-6a4ef12104a9">
 ___________________
-<img width="357" alt="ToDoList2" src="https://github.com/AlexFlorenco/to-do-list-ldc/assets/92060682/80e3a7db-7b85-4f13-be08-92d71b7199be">
+<img width="250" alt="ToDoList2" src="https://github.com/AlexFlorenco/to-do-list-ldc/assets/92060682/80e3a7db-7b85-4f13-be08-92d71b7199be">
 
 <br>
 
