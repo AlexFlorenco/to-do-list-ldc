@@ -7,9 +7,12 @@ class ToDoController extends ChangeNotifier implements IToDoController {
   static ToDoController? _instance;
   final IToDoService toDoService;
 
+  // Construtor privado para impedir instanciação direta
   ToDoController._(this.toDoService) {
     _toDoList = [];
   }
+
+  // Instância única do controller
   static ToDoController getInstance(IToDoService toDoService) {
     _instance ??= ToDoController._(toDoService);
     return _instance!;
@@ -87,6 +90,7 @@ class ToDoController extends ChangeNotifier implements IToDoController {
     notifyListeners();
   }
 
+  // Converte uma data no formato de string 'yyyy-MM-dd' para DateTime
   DateTime _parseDate(String date) {
     var parts = date.split('-');
     return DateTime(
@@ -96,6 +100,7 @@ class ToDoController extends ChangeNotifier implements IToDoController {
     );
   }
 
+  // Ordena a lista por prazo
   void _sortListByDate() {
     _toDoList.sort((a, b) {
       DateTime dateA = DateTime(3000);
@@ -111,11 +116,13 @@ class ToDoController extends ChangeNotifier implements IToDoController {
     });
   }
 
+  // Ordena a lista por status de conclusão
   void _sortListByStatusCompleted() {
     _toDoList.sort((a, b) =>
         (a.isCompleted == b.isCompleted) ? 0 : (a.isCompleted ? 1 : -1));
   }
 
+  // Atualiza o status das tarefas atrasadas na lista
   void _updateAllLateTasks() {
     _toDoList.asMap().forEach((index, task) {
       if (task.deadline != null && !task.isCompleted) {
