@@ -1,7 +1,7 @@
-name: to_do_list_ldc
-description: "A new Flutter project."
+name: lista_de_tarefas
+description: "Lista de tarefas."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -24,3 +24,4 @@ flutter:
 
   assets:
     - assets/images/
+    - shorebird.yaml
