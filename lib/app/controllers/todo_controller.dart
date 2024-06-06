@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import '../models/task.dart';
 import '../services/i_todo_service.dart';
@@ -39,46 +41,104 @@ class ToDoController extends ChangeNotifier implements IToDoController {
   }
 
   @override
-  void updateTask(String? deadline,
-      {required int index,
-      required String title,
-      required TaskStatus status,
-      required bool isCompleted}) {
-    _toDoList[index].title = title;
-    _toDoList[index].status = status;
-    _toDoList[index].isCompleted = isCompleted;
-    if (deadline != null) _toDoList[index].deadline = deadline;
+  void updateTask(
+    String? deadline, {
+    required int index,
+    required String title,
+    required TaskStatus status,
+    required bool isCompleted,
+    required bool isSearching,
+  }) {
+    if (isSearching) {
+      var list = toDoService.getToDoList();
+      list.firstWhere((element) => element.title == _toDoList[index].title)
+        ..title = title
+        ..status = status
+        ..isCompleted = isCompleted
+        ..deadline = deadline;
+      _toDoList = list;
+    } else {
+      _toDoList[index]
+        ..title = title
+        ..status = status
+        ..isCompleted = isCompleted
+        ..deadline = deadline;
+    }
 
     _updateAllLateTasks();
     _saveToDoList();
   }
 
   @override
-  void deleteTask({required int index}) {
-    _toDoList.removeAt(index);
+  void deleteTask({
+    required int index,
+    required String title,
+    String? deadline,
+  }) {
+    var list = toDoService.getToDoList();
+    bool removed = false;
+    list.removeWhere(
+      (element) {
+        if (!removed &&
+            element.title == title &&
+            element.deadline == deadline) {
+          removed = true;
+          return true;
+        }
+        return false;
+      },
+    );
+    _toDoList = list;
     _saveToDoList();
   }
 
   @override
-  void finishTask(int index) {
-    _toDoList[index].isCompleted = true;
-    Task task = _toDoList.removeAt(index);
-    _toDoList.add(task);
-
+  void finishTask(int index, String title, String? deadline) {
+    var list = toDoService.getToDoList();
+    list.firstWhere(
+        (element) => element.title == title && element.deadline == deadline)
+      ..isCompleted = true
+      ..status = TaskStatus.Concluida;
+    _toDoList = list;
     _saveToDoList();
   }
 
   @override
-  void restoreTask(int index) {
-    _toDoList[index].isCompleted = false;
-    Task task = _toDoList.removeAt(index);
-    _toDoList.insert(0, task);
+  void restoreTask(int index, String title, String? deadline) {
+    var list = toDoService.getToDoList();
+    list.firstWhere(
+        (element) => element.title == title && element.deadline == deadline)
+      ..isCompleted = false
+      ..status = TaskStatus.Criada;
+    _toDoList = list;
     _updateAllLateTasks();
     _saveToDoList();
+
+    // _toDoList[index].isCompleted = false;
+    // Task task = _toDoList.removeAt(index);
+    // _toDoList.insert(0, task);
+    // _updateAllLateTasks();
+    // _saveToDoList();
+  }
+
+  @override
+  void searchTask(String title) {
+    log("searchTask: $title");
+    if (title == "") {
+      return getToDoList();
+    }
+    _toDoList = toDoService.getToDoList();
+    List<Task> searchList = _toDoList
+        .where((task) => task.title.toLowerCase().contains(title.toLowerCase()))
+        .toList();
+    searchList.isNotEmpty ? _toDoList = searchList : _toDoList = [];
+    notifyListeners();
   }
 
   void _addTaskToList(Task task) {
-    _toDoList.add(task);
+    var list = toDoService.getToDoList();
+    list.add(task);
+    _toDoList = list;
     _saveToDoList();
   }
 

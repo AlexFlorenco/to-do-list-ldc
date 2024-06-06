@@ -30,13 +30,17 @@ class _TaskWidgetState extends State<TaskWidget> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColor.shade.withOpacity(0.5),
+            color: MediaQuery.platformBrightnessOf(context) == Brightness.light
+                ? AppColor.shade.withOpacity(0.5)
+                : AppColor.shadeDark.withOpacity(0.5),
             spreadRadius: -3,
             blurRadius: 5,
             offset: const Offset(0, 3),
           ),
         ],
-        color: AppColor.light,
+        color: MediaQuery.platformBrightnessOf(context) == Brightness.light
+            ? AppColor.light
+            : AppColor.lightDark,
       ),
       child: ListTile(
         leading: Checkbox(
@@ -47,11 +51,19 @@ class _TaskWidgetState extends State<TaskWidget> {
                 if (value!) {
                   widget.task.isCompleted = true;
                   widget.task.status = TaskStatus.Concluida;
-                  _toDoController.finishTask(widget.index);
+                  _toDoController.finishTask(
+                    widget.index,
+                    widget.task.title,
+                    widget.task.deadline,
+                  );
                 } else {
                   widget.task.isCompleted = false;
                   widget.task.status = TaskStatus.Criada;
-                  _toDoController.restoreTask(widget.index);
+                  _toDoController.restoreTask(
+                    widget.index,
+                    widget.task.title,
+                    widget.task.deadline,
+                  );
                 }
               });
             }),
@@ -79,10 +91,14 @@ class _TaskWidgetState extends State<TaskWidget> {
                   title: widget.task.title,
                   status: widget.task.status,
                   isCompleted: widget.task.isCompleted,
+                  isSearching: false,
                 );
               },
               child: Container(
-                color: AppColor.light,
+                color:
+                    MediaQuery.platformBrightnessOf(context) == Brightness.light
+                        ? AppColor.light
+                        : AppColor.lightDark,
                 height: 24,
                 child: Row(
                   children: [
@@ -149,7 +165,9 @@ class _TaskWidgetState extends State<TaskWidget> {
       case TaskStatus.Iniciada:
         return AppColor.success;
       case TaskStatus.Concluida:
-        return AppColor.primary;
+        return MediaQuery.platformBrightnessOf(context) == Brightness.light
+            ? AppColor.primary
+            : AppColor.primaryDark;
       case TaskStatus.Atrasada:
         return AppColor.error;
     }

@@ -7,8 +7,11 @@ abstract class IToDoController {
       {required int index,
       required String title,
       required TaskStatus status,
-      required bool isCompleted});
-  void deleteTask({required int index});
-  void finishTask(int index);
-  void restoreTask(int index);
+      required bool isCompleted,
+      required bool isSearching});
+  void deleteTask(
+      {required int index, required String title, String? deadline});
+  void finishTask(int index, String title, String? deadline);
+  void restoreTask(int index, String title, String? deadline);
+  void searchTask(String title);
 }

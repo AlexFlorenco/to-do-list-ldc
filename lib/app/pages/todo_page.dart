@@ -21,9 +21,13 @@ class _ToDoPageState extends State<ToDoPage> {
       ToDoController.getInstance(ToDoService());
   final _formKey = GlobalKey<FormState>();
   final _titleTaskEditingController = TextEditingController();
+  final _searchTaskEditingController = TextEditingController();
   String? _deadlineTaskValue;
+  final FocusNode _searchFocusNode = FocusNode();
+  final FocusNode _taskFocusNode = FocusNode();
 
   bool _isAddButton = true;
+  bool _isSearching = false;
   int? _selectedTaskIndex;
   Task? _selectedTask;
 
@@ -43,65 +47,120 @@ class _ToDoPageState extends State<ToDoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColor.primary,
-        title: const Text('To Do List'),
+        backgroundColor:
+            MediaQuery.platformBrightnessOf(context) == Brightness.light
+                ? AppColor.primary
+                : AppColor.primaryDark,
+        title: const Text('Lista de Tarefas'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              _isSearching = !_isSearching;
+              _searchFocusNode.requestFocus();
+              _clearInputs();
+              setState(() {});
+            },
+          ),
+        ],
       ),
       body: Stack(
         children: [
-          _toDoController.toDoList.isEmpty
-              ? const EmptyWidget()
-              : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(10, 20, 10, 150),
-                  separatorBuilder: (_, __) => const SizedBox(height: 6),
-                  itemCount: _toDoController.toDoList.length,
-                  itemBuilder: (_, index) {
-                    var task = _toDoController.toDoList[index];
-                    return GestureDetector(
-                      onTap: () {
-                        _selectedTaskIndex = index;
-                        _selectedTask = task;
-                        setState(() {
-                          _isAddButton = false;
-                        });
-                        _titleTaskEditingController.text = task.title;
-                        _deadlineTaskValue = task.deadline;
-                      },
-                      onLongPressStart: (touch) {
-                        showMenu(
-                          context: context,
-                          position: RelativeRect.fromLTRB(
-                            touch.globalPosition.dx,
-                            touch.globalPosition.dy,
-                            touch.globalPosition.dx,
-                            touch.globalPosition.dy,
-                          ),
-                          items: [
-                            PopupMenuItem(
-                              child: const Text('Deletar'),
-                              onTap: () {
-                                _toDoController.deleteTask(index: index);
-                                _clearInputs();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackbarWidget(
-                                    message: "Tarefa removida com sucesso!",
-                                  ),
-                                );
+          Column(
+            children: [
+              _isSearching
+                  ? Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: CustomTextFormField(
+                              controller: _searchTaskEditingController,
+                              label: 'Buscar tarefa',
+                              onPressed: _clearInputs,
+                              focusNode: _searchFocusNode,
+                              onSubmit: () {
+                                // _isSearching = false;
+                                // setState(() {});
+                              },
+                              onChanged: (value) {
+                                _toDoController.searchTask(value.trim());
                               },
                             ),
-                          ],
-                        );
-                      },
-                      child: TaskWidget(index: index, task: task),
-                    );
-                  },
-                ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Container(),
+              Expanded(
+                child: _toDoController.toDoList.isEmpty
+                    ? const EmptyWidget()
+                    : ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(10, 20, 10, 150),
+                        separatorBuilder: (_, __) => const SizedBox(height: 6),
+                        itemCount: _toDoController.toDoList.length,
+                        itemBuilder: (_, index) {
+                          var task = _toDoController.toDoList[index];
+                          return GestureDetector(
+                            onTap: () {
+                              _taskFocusNode.requestFocus();
+                              _selectedTaskIndex = index;
+                              _selectedTask = task;
+                              setState(() {
+                                _isAddButton = false;
+                              });
+                              _titleTaskEditingController.text = task.title;
+                              _deadlineTaskValue = task.deadline;
+                            },
+                            onLongPressStart: (touch) {
+                              showMenu(
+                                context: context,
+                                position: RelativeRect.fromLTRB(
+                                  touch.globalPosition.dx,
+                                  touch.globalPosition.dy,
+                                  touch.globalPosition.dx,
+                                  touch.globalPosition.dy,
+                                ),
+                                items: [
+                                  PopupMenuItem(
+                                    child: const Text('Deletar'),
+                                    onTap: () {
+                                      _toDoController.deleteTask(
+                                          index: index,
+                                          title: task.title,
+                                          deadline: task.deadline);
+                                      _clearInputs();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackbarWidget(
+                                          message:
+                                              "Tarefa removida com sucesso!",
+                                          context: context,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                            child: TaskWidget(index: index, task: task),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
           Positioned(
             bottom: 0,
             left: 0,
             right: 0,
             child: Container(
               padding: const EdgeInsets.all(12),
-              decoration: const BoxDecoration(color: AppColor.light),
+              decoration: BoxDecoration(
+                  color: MediaQuery.platformBrightnessOf(context) ==
+                          Brightness.light
+                      ? AppColor.light
+                      : AppColor.lightDark),
               child: SafeArea(
                 child: Row(
                   children: [
@@ -113,34 +172,40 @@ class _ToDoPageState extends State<ToDoPage> {
                             if (_formKey.currentState!.validate()) {
                               _isAddButton
                                   ? _toDoController.createTask(
-                                      _titleTaskEditingController.text,
+                                      _titleTaskEditingController.text.trim(),
                                       _deadlineTaskValue,
                                     )
                                   : _toDoController.updateTask(
                                       _deadlineTaskValue,
                                       index: _selectedTaskIndex!,
-                                      title: _titleTaskEditingController.text,
+                                      title: _titleTaskEditingController.text
+                                          .trim(),
                                       status: _selectedTask!.status,
                                       isCompleted: _selectedTask!.isCompleted,
+                                      isSearching: _isSearching,
                                     );
                               _isAddButton
                                   ? ScaffoldMessenger.of(context).showSnackBar(
                                       SnackbarWidget(
-                                          message:
-                                              "Tarefa criada com sucesso!"),
+                                        message: "Tarefa criada com sucesso!",
+                                        context: context,
+                                      ),
                                     )
                                   : ScaffoldMessenger.of(context).showSnackBar(
                                       SnackbarWidget(
                                         message:
                                             "Tarefa atualizada com sucesso!",
+                                        context: context,
                                       ),
                                     );
                             }
+                            _isSearching = false;
                             _clearInputs();
                           },
                           controller: _titleTaskEditingController,
                           onPressed: _clearInputs,
                           label: _isAddButton ? 'Nova tarefa' : 'Editar tarefa',
+                          focusNode: _taskFocusNode,
                         ),
                       ),
                     ),
@@ -156,13 +221,15 @@ class _ToDoPageState extends State<ToDoPage> {
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 _toDoController.createTask(
-                                  _titleTaskEditingController.text,
+                                  _titleTaskEditingController.text.trim(),
                                   _deadlineTaskValue,
                                 );
+                                _isSearching = false;
                                 _clearInputs();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackbarWidget(
                                     message: "Tarefa criada com sucesso!",
+                                    context: context,
                                   ),
                                 );
                               }
@@ -175,14 +242,18 @@ class _ToDoPageState extends State<ToDoPage> {
                                 _toDoController.updateTask(
                                   _deadlineTaskValue,
                                   index: _selectedTaskIndex!,
-                                  title: _titleTaskEditingController.text,
+                                  title:
+                                      _titleTaskEditingController.text.trim(),
                                   status: _selectedTask!.status,
                                   isCompleted: _selectedTask!.isCompleted,
+                                  isSearching: _isSearching,
                                 );
+                                _isSearching = false;
                                 _clearInputs();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackbarWidget(
                                     message: "Tarefa atualizada com sucesso!",
+                                    context: context,
                                   ),
                                 );
                               }
@@ -214,7 +285,9 @@ class _ToDoPageState extends State<ToDoPage> {
 
   _clearInputs() {
     _titleTaskEditingController.clear();
+    _searchTaskEditingController.clear();
     _deadlineTaskValue = null;
     _isAddButton = true;
+    _toDoController.getToDoList();
   }
 }
