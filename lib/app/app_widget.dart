@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:lista_de_tarefas/app/core/singletons/app_colors.dart';
 
 import 'pages/todo_page.dart';
 
@@ -9,9 +10,39 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'To Do List LDC',
+      title: 'Lista de Tarefas',
       theme: ThemeData(
         useMaterial3: false,
+        brightness: MediaQuery.platformBrightnessOf(context) == Brightness.dark
+            ? Brightness.dark
+            : Brightness.light,
+        checkboxTheme:
+            CheckboxThemeData(checkColor: WidgetStateProperty.resolveWith(
+          (states) {
+            if (states.contains(WidgetState.selected)) {
+              return AppColor.light;
+            } else {
+              return MediaQuery.platformBrightnessOf(context) ==
+                      Brightness.light
+                  ? AppColor.light
+                  : AppColor.lightDark;
+            }
+          },
+        ), fillColor: WidgetStateProperty.resolveWith(
+          (states) {
+            if (states.contains(WidgetState.selected)) {
+              return MediaQuery.platformBrightnessOf(context) ==
+                      Brightness.light
+                  ? AppColor.primary
+                  : AppColor.primaryDark;
+            } else {
+              return MediaQuery.platformBrightnessOf(context) ==
+                      Brightness.light
+                  ? AppColor.light
+                  : AppColor.lightDark;
+            }
+          },
+        )),
       ),
       home: const ToDoPage(),
       localizationsDelegates: const [
