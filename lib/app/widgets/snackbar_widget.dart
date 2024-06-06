@@ -6,24 +6,37 @@ class SnackbarWidget extends SnackBar {
   SnackbarWidget({
     super.key,
     required String message,
+    required BuildContext context,
   }) : super(
           duration: const Duration(seconds: 2),
           content: SizedBox(
             height: 32,
             child: Row(
               children: [
-                const Icon(Icons.info, color: AppColor.light),
+                Icon(Icons.info,
+                    color: MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.light
+                        ? AppColor.light
+                        : AppColor.lightDark),
                 const SizedBox(width: 8),
                 Text(
                   message,
-                  style: const TextStyle(color: AppColor.light, fontSize: 16),
+                  style: TextStyle(
+                      color: MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.light
+                          ? AppColor.light
+                          : AppColor.lightDark,
+                      fontSize: 16),
                 ),
               ],
             ),
           ),
           backgroundColor: AppColor.success,
           behavior: SnackBarBehavior.fixed,
-          closeIconColor: AppColor.light,
+          closeIconColor:
+              MediaQuery.platformBrightnessOf(context) == Brightness.light
+                  ? AppColor.light
+                  : AppColor.lightDark,
           showCloseIcon: true,
         );
 }

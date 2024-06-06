@@ -16,9 +16,15 @@ class EmptyWidget extends StatelessWidget {
             opacity: const AlwaysStoppedAnimation(0.4),
           ),
           const SizedBox(height: 10),
-          const Text(
+          Text(
             'Nenhum resultado encontrado.\nExperimente adicionar uma tarefa.',
-            style: TextStyle(color: AppColor.semiTransparent),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color:
+                  MediaQuery.platformBrightnessOf(context) == Brightness.light
+                      ? AppColor.semiTransparent
+                      : AppColor.shade,
+            ),
           ),
           const SizedBox(height: 80),
         ],

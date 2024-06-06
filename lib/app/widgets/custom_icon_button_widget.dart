@@ -15,8 +15,10 @@ class CustomIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColor.primary,
+      decoration: BoxDecoration(
+        color: MediaQuery.platformBrightnessOf(context) == Brightness.light
+            ? AppColor.primary
+            : AppColor.primaryDark,
         shape: BoxShape.circle,
       ),
       child: IconButton(
@@ -24,7 +26,9 @@ class CustomIconButton extends StatelessWidget {
         splashColor: AppColor.transparent,
         onPressed: () => onPressed(),
         icon: Icon(icon, size: 30),
-        color: AppColor.light,
+        color: MediaQuery.platformBrightnessOf(context) == Brightness.light
+            ? AppColor.light
+            : AppColor.lightDark,
       ),
     );
   }
